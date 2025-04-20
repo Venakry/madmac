@@ -131,6 +131,11 @@
     .play-btn {
       font-size: 18px;
     }
+    svg.youtube-icon {
+      width: 24px;
+      height: 24px;
+      fill: red;
+    }
   </style>
 </head>
 <body>
@@ -139,9 +144,10 @@
 
 <div class="profile">
   <img src="madmac pfp.jpeg" alt="MadMac Logo">
+
   <a href="https://www.youtube.com/@M8DM8C" target="_blank">
     <button class="youtube-btn">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="red"><path d="M10 15l5.19-3L10 9v6zm11-3c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2s.9 2 2 2h14c1.1 0 2-.9 2-2z"/></svg>
+      <svg class="youtube-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M23.498 6.186a2.937 2.937 0 00-2.066-2.077C19.424 3.5 12 3.5 12 3.5s-7.424 0-9.432.609a2.937 2.937 0 00-2.066 2.077C0 8.208 0 12 0 12s0 3.792.502 5.814a2.937 2.937 0 002.066 2.077c2.008.609 9.432.609 9.432.609s7.424 0 9.432-.609a2.937 2.937 0 002.066-2.077C24 15.792 24 12 24 12s0-3.792-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
       YouTube Channel
     </button>
   </a>
@@ -154,7 +160,7 @@
   <div class="section-title" id="sectionTitle">Recent Videos</div>
 
   <div class="videos" id="videoList">
-    <!-- videos will load here -->
+    <!-- videos load here -->
   </div>
 </div>
 
