@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MadMac</title>
+  <title>MADMAC</title>
   <style>
     body {
       margin: 0;
@@ -140,33 +140,24 @@
       height: 24px;
       fill: red;
     }
-    .video-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      width: 100%;
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
     }
-    .video-item {
-      background: #fff;
-      border-radius: 12px;
-      padding: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    .error {
+      color: #ff3333;
+      text-align: center;
+      padding: 20px;
     }
-    .video-item img {
-      width: 100%;
-      border-radius: 8px;
-      margin-bottom: 8px;
-    }
-    .video-item-title {
-      font-size: 12px;
-      font-weight: 500;
-      color: #000;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      height: 36px;
+    .retry-btn {
+      margin-top: 10px;
+      padding: 8px 16px;
+      background: #000;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -185,79 +176,109 @@
   </a>
 
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('recent')">VIDEOS</button>
-    <button class="tab-btn" onclick="switchTab('popular')">YouTube Channels</button>
+    <button class="tab-btn active" onclick="switchTab('recent')">Recent Videos</button>
+    <button class="tab-btn" onclick="switchTab('popular')">Popular Videos</button>
   </div>
 
-  <div class="section-title" id="sectionTitle">VIDEOS</div>
+  <div class="section-title" id="sectionTitle">Recent Videos</div>
 
-  <div class="video-grid" id="videoList">
-    <!-- videos will load here -->
+  <div class="videos" id="videoList">
+    <div class="loading">Loading videos...</div>
   </div>
 </div>
 
 <script>
-// YouTube API key - Note: In production, this should be secured on your server
-const API_KEY = 'AIzaSyA1TpcS3Ej-YbCPisiw2GbWXi4MPlBzFQk'; // Replace with your actual API key
+// Configuration
+const SCRAPER_ENDPOINT = 'https://madmac.netlify.app/.netlify/functions/fetchMadMacVideos';
+let videoCache = { recent: [], popular: [] };
 
-// Channel ID for @M8DM8C
-const CHANNEL_ID = 'UCz_tZ1lZXvgUbe9t3W64R7Q';
-
-async function fetchVideos(sortBy = 'date') {
+// Main function to fetch videos
+async function fetchVideos() {
   try {
-    const response = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=${sortBy}&maxResults=6&type=video`);
+    const response = await fetch(SCRAPER_ENDPOINT);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    
     const data = await response.json();
-    return data.items.map(item => ({
-      id: item.id.videoId,
-      title: item.snippet.title,
-      thumbnail: item.snippet.thumbnails.medium.url,
-      link: `https://www.youtube.com/watch?v=${item.id.videoId}`
-    }));
+    
+    // Handle both array response and error responses
+    if (Array.isArray(data)) {
+      return {
+        recent: data.slice(0, 6),
+        popular: [...data].sort(() => 0.5 - Math.random()).slice(0, 6) // Random 6 as popular
+      };
+    }
+    
+    // If the response has an error property
+    if (data.error) throw new Error(data.error);
+    
+    return data;
   } catch (error) {
-    console.error('Error fetching videos:', error);
-    return [];
+    console.error('Fetch error:', error);
+    throw error;
   }
 }
 
-async function switchTab(tab) {
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-  if (tab === 'recent') {
-    document.querySelectorAll('.tab-btn')[0].classList.add('active');
-    document.getElementById('sectionTitle').innerText = 'VIDEOS';
-    const videos = await fetchVideos('date');
-    loadVideos(videos);
-  } else {
-    document.querySelectorAll('.tab-btn')[1].classList.add('active');
-    document.getElementById('sectionTitle').innerText = 'YouTube Channels';
-    // For channels tab, we'll just show a message as per the image
-    const container = document.getElementById('videoList');
+// Load all videos into cache
+async function loadAllVideos() {
+  const container = document.getElementById('videoList');
+  
+  try {
+    container.innerHTML = '<div class="loading">Loading videos...</div>';
+    const videos = await fetchVideos();
+    
+    videoCache = {
+      recent: videos.recent || [],
+      popular: videos.popular || []
+    };
+    
+    loadVideos('recent');
+  } catch (error) {
     container.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #666;">
-        <p>test&nbsp;&nbsp;&nbsp;test</p>
-        <p>test&nbsp;&nbsp;&nbsp;test</p>
-        <p>test&nbsp;&nbsp;&nbsp;test</p>
+      <div class="error">
+        Failed to load videos<br>
+        <button class="retry-btn" onclick="loadAllVideos()">Retry</button>
       </div>
     `;
   }
 }
 
-function loadVideos(videos) {
+// Switch between tabs
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('sectionTitle').textContent = 
+    `${tab.charAt(0).toUpperCase() + tab.slice(1)} Videos`;
+  loadVideos(tab);
+}
+
+// Display videos for the selected tab
+function loadVideos(tab) {
   const container = document.getElementById('videoList');
-  container.innerHTML = '';
+  const videos = videoCache[tab];
   
+  if (!videos || videos.length === 0) {
+    container.innerHTML = '<div class="loading">No videos found</div>';
+    return;
+  }
+
+  container.innerHTML = '';
   videos.forEach(video => {
-    const videoItem = document.createElement('div');
-    videoItem.className = 'video-item';
-    videoItem.innerHTML = `
-      <img src="${video.thumbnail}" alt="${video.title}" onclick="window.open('${video.link}', '_blank')">
-      <div class="video-item-title">${video.title}</div>
+    const row = document.createElement('div');
+    row.className = 'video-row';
+    row.innerHTML = `
+      <img src="${video.thumbnail}" class="thumbnail" alt="${video.title}" 
+           onerror="this.src='https://i.ytimg.com/vi/${video.videoId || 'default'}/hqdefault.jpg'">
+      <div class="video-right" onclick="window.open('${video.link}', '_blank')">
+        <span class="video-title">${video.title}</span>
+        <span class="play-btn">▶️</span>
+      </div>
     `;
-    container.appendChild(videoItem);
+    container.appendChild(row);
   });
 }
 
-// Load default tab
-switchTab('recent');
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', loadAllVideos);
 </script>
 
 </body>
