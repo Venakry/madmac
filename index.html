@@ -8,7 +8,7 @@
     body {
       margin: 0;
       padding: 20px;
-      background: #f9f9f9;
+      background: #fafafa;
       font-family: 'Helvetica Neue', sans-serif;
       display: flex;
       flex-direction: column;
@@ -72,31 +72,29 @@
       padding: 10px;
       color: white;
       cursor: pointer;
-      transition: background 0.3s;
+      justify-content: space-between;
     }
-    .video-item:hover {
-      background: #333;
-    }
-    .video-arrow {
-      font-size: 24px;
-      margin-right: 10px;
-    }
-    .video-info {
+    .video-left {
       display: flex;
       align-items: center;
       gap: 10px;
-      flex: 1;
     }
-    .video-info img {
+    .video-thumbnail {
       width: 70px;
-      height: 50px;
-      object-fit: cover;
+      height: 40px;
+      background: #333;
       border-radius: 8px;
+      object-fit: cover;
     }
-    .video-info span {
-      flex: 1;
+    .video-title {
       font-size: 14px;
-      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 150px;
+    }
+    .video-arrow {
+      font-size: 20px;
     }
   </style>
 </head>
@@ -106,7 +104,7 @@
   <img src="madmac pfp.jpeg" alt="MadMac Logo">
   <h1>madmac</h1>
   <a href="https://www.youtube.com/@M8DM8C" target="_blank">
-    <button>Visit YouTube Channel</button>
+    <button>YouTube Channel ➔</button>
   </a>
   <div class="videos-section">
     <div class="videos-title">Videos</div>
@@ -132,7 +130,6 @@ async function fetchVideos() {
     for (const link of videoLinks) {
       const videoId = link.split('v=')[1];
 
-      // Fetch title from YouTube oEmbed
       const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
       const data = await res.json();
 
@@ -141,11 +138,11 @@ async function fetchVideos() {
       videoItem.onclick = () => window.open(link, '_blank');
 
       videoItem.innerHTML = `
-        <div class="video-arrow">➔</div>
-        <div class="video-info">
-          <span>${data.title}</span>
-          <img src="https://i.ytimg.com/vi/${videoId}/hqdefault.jpg" alt="Thumbnail">
+        <div class="video-left">
+          <img src="https://i.ytimg.com/vi/${videoId}/hqdefault.jpg" alt="Thumbnail" class="video-thumbnail">
+          <span class="video-title">${data.title}</span>
         </div>
+        <div class="video-arrow">➔</div>
       `;
 
       videosDiv.appendChild(videoItem);
