@@ -10,6 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "fast-xml-parser": "^5.2.0",
     "jsdom": "^26.1.0",
     "node-fetch": "^2.7.0"
   }
