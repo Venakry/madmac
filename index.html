@@ -116,47 +116,41 @@
   </div>
 </div>
 
+<!-- 🔥 FIXED SCRIPT STARTS HERE -->
 <script>
 async function fetchVideos() {
-  const API_KEY = 'AIzaSyA1TpcS3Ej-YbCPisiw2GbWXi4MPlBzFQk';
-  const CHANNEL_ID = 'UC0ud4nQPzZo4PMBVdKTSP5Q'; // MadMac Channel ID
-  const MAX_RESULTS = 3;
-
   try {
-    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=${MAX_RESULTS}`);
+    const res = await fetch('/.netlify/functions/fetchMadMacVideos');
     const data = await res.json();
 
     const videosDiv = document.getElementById('videos');
     videosDiv.innerHTML = '';
 
-    data.items.forEach(item => {
-      if (item.id.kind === "youtube#video") {
-        const videoId = item.id.videoId;
-        const title = item.snippet.title;
-        const thumbnail = item.snippet.thumbnails.medium.url;
+    data.forEach(item => {
+      const videoItem = document.createElement('div');
+      videoItem.className = 'video-item';
+      videoItem.onclick = () => window.open(item.link, '_blank');
 
-        const videoItem = document.createElement('div');
-        videoItem.className = 'video-item';
-        videoItem.onclick = () => window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
+      videoItem.innerHTML = `
+        <div class="video-arrow">➔</div>
+        <div class="video-info">
+          <span>${item.title}</span>
+          <img src="${item.thumbnail}" alt="Thumbnail">
+        </div>
+      `;
 
-        videoItem.innerHTML = `
-          <div class="video-arrow">➔</div>
-          <div class="video-info">
-            <span>${title}</span>
-            <img src="${thumbnail}" alt="Thumbnail">
-          </div>
-        `;
-
-        videosDiv.appendChild(videoItem);
-      }
+      videosDiv.appendChild(videoItem);
     });
+
   } catch (error) {
+    console.error('Failed to load videos:', error);
     document.getElementById('videos').innerText = 'Failed to load videos.';
   }
 }
 
 fetchVideos();
 </script>
+<!-- 🔥 FIXED SCRIPT ENDS HERE -->
 
 </body>
 </html>
