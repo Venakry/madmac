@@ -1,101 +1,106 @@
-import fetch from 'node-fetch';
-import { XMLParser } from 'fast-xml-parser';
+<script>
+// Configuration - Updated with better error handling
+const SCRAPER_ENDPOINT = 'https://madmac.netlify.app/.netlify/functions/fetchMadMacVideos';
+let videoCache = { recent: [], popular: [] };
 
-export async function handler(event, context) {
-  // Set CORS headers for all responses
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Content-Type': 'application/json'
-  };
-
-  // Handle OPTIONS request for CORS preflight
-  if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 204,
-      headers,
-      body: ''
-    };
-  }
-
+async function fetchVideos() {
   try {
-    // Validate YouTube channel ID
-    const channelId = 'UC0ud4nQPzZo4PMBVdKTSP5Q';
-    if (!channelId || !channelId.startsWith('UC')) {
-      throw new Error('Invalid YouTube channel ID');
-    }
-
-    // Fetch YouTube RSS feed with timeout
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
+    // Add cache-busting parameter to avoid stale responses
+    const response = await fetch(`${SCRAPER_ENDPOINT}?t=${Date.now()}`);
     
-    const res = await fetch(
-      `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`,
-      { signal: controller.signal }
-    );
-    clearTimeout(timeout);
-
-    if (!res.ok) {
-      throw new Error(`YouTube API responded with status ${res.status}`);
+    // First check if the response exists
+    if (!response) {
+      throw new Error('No response from server');
     }
-
-    const xmlText = await res.text();
-    if (!xmlText.includes('<feed')) {
-      throw new Error('Invalid YouTube RSS response');
-    }
-
-    // Parse XML with error handling
-    const parser = new XMLParser({
-      ignoreAttributes: false,
-      isArray: (name) => name === 'entry'
-    });
-
-    let jsonData;
-    try {
-      jsonData = parser.parse(xmlText);
-    } catch (parseError) {
-      throw new Error('Failed to parse YouTube RSS feed');
-    }
-
-    // Process entries with validation
-    const entries = jsonData?.feed?.entry || [];
-    if (!Array.isArray(entries)) {
-      throw new Error('Invalid video entries format');
-    }
-
-    const videos = entries.slice(0, 6).map(entry => {
-      if (!entry?.['yt:videoId']) {
-        throw new Error('Missing video ID in entry');
-      }
+    
+    // Then check if the response is OK (status 200-299)
+    if (!response.ok) {
+      // Try to get error details from response
+      let errorDetails = '';
+      try {
+        const errorData = await response.json();
+        errorDetails = errorData.error || errorData.message || '';
+      } catch (e) {}
       
+      throw new Error(`Server error: ${response.status} ${response.statusText} ${errorDetails}`);
+    }
+    
+    // Try to parse the response
+    let data;
+    try {
+      data = await response.json();
+    } catch (e) {
+      throw new Error('Invalid JSON response');
+    }
+    
+    // Handle different response formats
+    if (Array.isArray(data)) {
       return {
-        title: entry.title || 'Untitled Video',
-        videoId: entry['yt:videoId'],
-        thumbnail: `https://i.ytimg.com/vi/${entry['yt:videoId']}/hqdefault.jpg`,
-        link: `https://youtube.com/watch?v=${entry['yt:videoId']}`,
-        published: entry.published ? new Date(entry.published).toISOString() : null
+        recent: data.slice(0, 6),
+        popular: [...data].sort(() => 0.5 - Math.random()).slice(0, 6)
       };
-    });
-
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        recent: videos,
-        popular: [...videos].sort(() => 0.5 - Math.random()).slice(0, 6) // Random 6 as popular
-      })
-    };
-
-  } catch (err) {
-    console.error('Scraper error:', err);
-    return {
-      statusCode: err.message.includes('timeout') ? 504 : 500,
-      headers,
-      body: JSON.stringify({ 
-        error: 'Failed to fetch videos',
-        details: err.message,
-        timestamp: new Date().toISOString()
-      })
-    };
+    }
+    
+    if (data.error) {
+      throw new Error(data.error);
+    }
+    
+    if (!data.recent || !data.popular) {
+      throw new Error('Unexpected response format');
+    }
+    
+    return data;
+    
+  } catch (error) {
+    console.error('Fetch error:', error);
+    throw error;
   }
 }
+
+async function loadAllVideos() {
+  const container = document.getElementById('videoList');
+  
+  try {
+    container.innerHTML = '<div class="loading">Loading videos...</div>';
+    
+    // Add timeout to prevent hanging
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Request timed out')), 10000)
+    );
+    
+    const videos = await Promise.race([fetchVideos(), timeoutPromise]);
+    
+    videoCache = {
+      recent: videos.recent || [],
+      popular: videos.popular || []
+    };
+    
+    loadVideos('recent');
+    
+  } catch (error) {
+    console.error('Load error:', error);
+    
+    // More detailed error messages
+    let errorMessage = 'Failed to load videos';
+    if (error.message.includes('timed out')) {
+      errorMessage = 'Server is taking too long to respond';
+    } else if (error.message.includes('JSON')) {
+      errorMessage = 'Received invalid data from server';
+    } else if (error.message.includes('404')) {
+      errorMessage = 'Scraper endpoint not found';
+    } else if (error.message.includes('CORS')) {
+      errorMessage = 'Cross-origin request blocked';
+    }
+    
+    container.innerHTML = `
+      <div class="error">
+        ${errorMessage}<br>
+        <small>${error.message}</small><br>
+        <button class="retry-btn" onclick="loadAllVideos()">Retry</button>
+      </div>
+    `;
+  }
+}
+
+// Rest of your code remains the same...
+</script>
