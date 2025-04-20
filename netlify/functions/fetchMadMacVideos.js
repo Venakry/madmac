@@ -1,47 +1,22 @@
 import fetch from 'node-fetch';
-import { JSDOM } from 'jsdom';
+import { XMLParser } from 'fast-xml-parser';
 
 export async function handler(event, context) {
   try {
-    const res = await fetch('https://www.youtube.com/@M8DM8C/videos');
-    const text = await res.text();
+    const res = await fetch('https://www.youtube.com/feeds/videos.xml?channel_id=UC0ud4nQPzZo4PMBVdKTSP5Q');
+    const xmlText = await res.text();
 
-    const dom = new JSDOM(text);
-    const document = dom.window.document;
+    const parser = new XMLParser();
+    const jsonData = parser.parse(xmlText);
 
-    const scripts = [...document.querySelectorAll('script')];
-    const ytDataScript = scripts.find(s => s.textContent.includes('var ytInitialData'));
+    const entries = jsonData.feed.entry || [];
 
-    if (!ytDataScript) {
-      throw new Error('Could not find initial YouTube data.');
-    }
-
-    const ytDataText = ytDataScript.textContent
-      .replace('var ytInitialData = ', '')
-      .replace(/;$/, '');
-
-    const jsonData = JSON.parse(ytDataText);
-
-    const videoItems = jsonData.contents
-      ?.twoColumnBrowseResultsRenderer
-      ?.tabs?.[0]
-      ?.tabRenderer
-      ?.content
-      ?.richGridRenderer
-      ?.contents || [];
-
-    const videos = videoItems
-      .filter(item => item.richItemRenderer && item.richItemRenderer.content.videoRenderer)
-      .slice(0, 3) // Only 3 recent videos
-      .map(item => {
-        const video = item.richItemRenderer.content.videoRenderer;
-        return {
-          title: video.title.runs[0].text,
-          videoId: video.videoId,
-          thumbnail: video.thumbnail.thumbnails.pop().url,
-          link: `https://www.youtube.com/watch?v=${video.videoId}`
-        };
-      });
+    const videos = entries.slice(0, 3).map(entry => ({
+      title: entry.title,
+      videoId: entry['yt:videoId'],
+      thumbnail: `https://i.ytimg.com/vi/${entry['yt:videoId']}/hqdefault.jpg`,
+      link: entry.link?.["@_href"]
+    }));
 
     return {
       statusCode: 200,
