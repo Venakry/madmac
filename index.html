@@ -8,152 +8,201 @@
     body {
       margin: 0;
       padding: 20px;
-      background: #fafafa;
-      font-family: 'Helvetica Neue', sans-serif;
+      background: #f9f9f9;
+      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
     }
+    h1 {
+      font-size: 32px;
+      font-weight: bold;
+      margin: 0 0 20px;
+      letter-spacing: 1px;
+    }
     .profile {
       background: #fff;
       border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 20px;
       text-align: center;
       width: 100%;
       max-width: 400px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
     .profile img {
-      width: 120px;
-      height: 120px;
+      width: 150px;
+      height: 150px;
+      border-radius: 30px;
       object-fit: cover;
-      border-radius: 20px;
       margin-bottom: 20px;
     }
-    .profile h1 {
-      font-size: 24px;
-      margin: 10px 0 20px;
-      color: #333;
-    }
-    .profile a button {
-      background-color: #000;
-      color: #fff;
+    .youtube-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: #fff;
+      color: black;
       border: none;
-      padding: 12px 25px;
-      border-radius: 12px;
+      padding: 12px 20px;
+      border-radius: 20px;
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      width: 100%;
       margin-bottom: 30px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: background 0.2s;
     }
-    .profile a button:hover {
-      background-color: #333;
+    .youtube-btn:hover {
+      background: #f1f1f1;
     }
-    .videos-title {
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      background: #eee;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .tab-btn.active {
+      background: #000;
+      color: white;
+    }
+    .section-title {
       text-align: left;
       font-weight: bold;
       font-size: 20px;
       margin-bottom: 15px;
-      color: #333;
+      width: 100%;
+      max-width: 400px;
     }
     .videos {
       width: 100%;
+      max-width: 400px;
       display: flex;
       flex-direction: column;
       gap: 15px;
     }
-    .video-item {
-      display: flex;
-      align-items: center;
-      background: #000;
-      border-radius: 12px;
-      padding: 10px;
-      color: white;
-      cursor: pointer;
-      justify-content: space-between;
-    }
-    .video-left {
+    .video-row {
       display: flex;
       align-items: center;
       gap: 10px;
     }
-    .video-thumbnail {
-      width: 70px;
-      height: 40px;
-      background: #333;
-      border-radius: 8px;
+    .thumbnail {
+      width: 90px;
+      height: 60px;
+      background: #000;
+      border-radius: 12px;
       object-fit: cover;
+    }
+    .video-right {
+      background: #fff;
+      flex: 1;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .video-right:hover {
+      background: #f1f1f1;
     }
     .video-title {
       font-size: 14px;
-      white-space: nowrap;
+      font-weight: 500;
       overflow: hidden;
+      white-space: nowrap;
       text-overflow: ellipsis;
-      max-width: 150px;
+      margin-right: 10px;
     }
-    .video-arrow {
-      font-size: 20px;
+    .play-btn {
+      font-size: 18px;
     }
   </style>
 </head>
 <body>
 
+<h1>MADMAC</h1>
+
 <div class="profile">
   <img src="madmac pfp.jpeg" alt="MadMac Logo">
-  <h1>madmac</h1>
   <a href="https://www.youtube.com/@M8DM8C" target="_blank">
-    <button>YouTube Channel ➔</button>
+    <button class="youtube-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="red"><path d="M10 15l5.19-3L10 9v6zm11-3c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2s.9 2 2 2h14c1.1 0 2-.9 2-2z"/></svg>
+      YouTube Channel
+    </button>
   </a>
-  <div class="videos-section">
-    <div class="videos-title">Videos</div>
-    <div class="videos" id="videos">
-      Loading videos...
-    </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('recent')">Recent Videos</button>
+    <button class="tab-btn" onclick="switchTab('popular')">Popular Videos</button>
+  </div>
+
+  <div class="section-title" id="sectionTitle">Recent Videos</div>
+
+  <div class="videos" id="videoList">
+    <!-- videos will load here -->
   </div>
 </div>
 
 <script>
-// 🔥 Put your 3 video links here
-const videoLinks = [
-  "https://www.youtube.com/watch?v=9AlnYTEGpfU",
-  "https://www.youtube.com/watch?v=WDBspnEVBNg&t=74s",
-  "https://www.youtube.com/watch?v=pj5wFKvz2Bw"
-];
+const videos = {
+  recent: [
+    { title: "Madmac - Football Warmup", link: "https://www.youtube.com/watch?v=VIDEO_ID_1", thumbnail: "https://i.ytimg.com/vi/VIDEO_ID_1/hqdefault.jpg" },
+    { title: "Madmac - VRFS Trickshot", link: "https://www.youtube.com/watch?v=VIDEO_ID_2", thumbnail: "https://i.ytimg.com/vi/VIDEO_ID_2/hqdefault.jpg" },
+    { title: "Madmac - Skills Showcase", link: "https://www.youtube.com/watch?v=VIDEO_ID_3", thumbnail: "https://i.ytimg.com/vi/VIDEO_ID_3/hqdefault.jpg" }
+  ],
+  popular: [
+    { title: "Madmac - Best Goal Ever", link: "https://www.youtube.com/watch?v=VIDEO_ID_4", thumbnail: "https://i.ytimg.com/vi/VIDEO_ID_4/hqdefault.jpg" },
+    { title: "Madmac - Epic Save", link: "https://www.youtube.com/watch?v=VIDEO_ID_5", thumbnail: "https://i.ytimg.com/vi/VIDEO_ID_5/hqdefault.jpg" },
+    { title: "Madmac - Top Skills", link: "https://www.youtube.com/watch?v=VIDEO_ID_6", thumbnail: "https://i.ytimg.com/vi/VIDEO_ID_6/hqdefault.jpg" }
+  ]
+};
 
-async function fetchVideos() {
-  try {
-    const videosDiv = document.getElementById('videos');
-    videosDiv.innerHTML = '';
-
-    for (const link of videoLinks) {
-      const videoId = link.split('v=')[1];
-
-      const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
-      const data = await res.json();
-
-      const videoItem = document.createElement('div');
-      videoItem.className = 'video-item';
-      videoItem.onclick = () => window.open(link, '_blank');
-
-      videoItem.innerHTML = `
-        <div class="video-left">
-          <img src="https://i.ytimg.com/vi/${videoId}/hqdefault.jpg" alt="Thumbnail" class="video-thumbnail">
-          <span class="video-title">${data.title}</span>
-        </div>
-        <div class="video-arrow">➔</div>
-      `;
-
-      videosDiv.appendChild(videoItem);
-    }
-  } catch (error) {
-    console.error('Failed to load videos:', error);
-    document.getElementById('videos').innerText = 'Failed to load videos.';
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  if (tab === 'recent') {
+    document.querySelectorAll('.tab-btn')[0].classList.add('active');
+    document.getElementById('sectionTitle').innerText = 'Recent Videos';
+  } else {
+    document.querySelectorAll('.tab-btn')[1].classList.add('active');
+    document.getElementById('sectionTitle').innerText = 'Popular Videos';
   }
+  loadVideos(tab);
 }
 
-fetchVideos();
+function loadVideos(tab) {
+  const container = document.getElementById('videoList');
+  container.innerHTML = '';
+  videos[tab].forEach(video => {
+    const row = document.createElement('div');
+    row.className = 'video-row';
+    row.innerHTML = `
+      <img src="${video.thumbnail}" class="thumbnail" alt="Thumbnail">
+      <div class="video-right" onclick="window.open('${video.link}', '_blank')">
+        <span class="video-title">${video.title}</span>
+        <span class="play-btn">▶️</span>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+// Load default
+loadVideos('recent');
 </script>
 
 </body>
