@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MadMac Profile</title>
+  <title>MadMac</title>
   <style>
     body {
       margin: 0;
@@ -116,32 +116,40 @@
   </div>
 </div>
 
-<!-- 🔥 FIXED SCRIPT STARTS HERE -->
 <script>
+// 🔥 Put your 3 video links here
+const videoLinks = [
+  "https://www.youtube.com/watch?v=VIDEO_ID_1",
+  "https://www.youtube.com/watch?v=VIDEO_ID_2",
+  "https://www.youtube.com/watch?v=VIDEO_ID_3"
+];
+
 async function fetchVideos() {
   try {
-    const res = await fetch('/.netlify/functions/fetchMadMacVideos');
-    const data = await res.json();
-
     const videosDiv = document.getElementById('videos');
     videosDiv.innerHTML = '';
 
-    data.forEach(item => {
+    for (const link of videoLinks) {
+      const videoId = link.split('v=')[1];
+
+      // Fetch title from YouTube oEmbed
+      const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
+      const data = await res.json();
+
       const videoItem = document.createElement('div');
       videoItem.className = 'video-item';
-      videoItem.onclick = () => window.open(item.link, '_blank');
+      videoItem.onclick = () => window.open(link, '_blank');
 
       videoItem.innerHTML = `
         <div class="video-arrow">➔</div>
         <div class="video-info">
-          <span>${item.title}</span>
-          <img src="${item.thumbnail}" alt="Thumbnail">
+          <span>${data.title}</span>
+          <img src="https://i.ytimg.com/vi/${videoId}/hqdefault.jpg" alt="Thumbnail">
         </div>
       `;
 
       videosDiv.appendChild(videoItem);
-    });
-
+    }
   } catch (error) {
     console.error('Failed to load videos:', error);
     document.getElementById('videos').innerText = 'Failed to load videos.';
@@ -150,7 +158,6 @@ async function fetchVideos() {
 
 fetchVideos();
 </script>
-<!-- 🔥 FIXED SCRIPT ENDS HERE -->
 
 </body>
 </html>
