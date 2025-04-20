@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MadMac Profile</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f9f9f9;
+      font-family: 'Helvetica Neue', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .profile {
+      background: #fff;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+    }
+    .profile img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+    .profile h1 {
+      font-size: 24px;
+      margin: 10px 0 20px;
+      color: #333;
+    }
+    .profile a button {
+      background-color: #000;
+      color: #fff;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 30px;
+    }
+    .profile a button:hover {
+      background-color: #333;
+    }
+    .videos-title {
+      text-align: left;
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: #333;
+    }
+    .videos {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .video-item {
+      display: flex;
+      align-items: center;
+      background: #000;
+      border-radius: 12px;
+      padding: 10px;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .video-item:hover {
+      background: #333;
+    }
+    .video-arrow {
+      font-size: 24px;
+      margin-right: 10px;
+    }
+    .video-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+    .video-info img {
+      width: 70px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .video-info span {
+      flex: 1;
+      font-size: 14px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+
+<div class="profile">
+  <img src="madmac pfp.jpeg" alt="MadMac Logo">
+  <h1>madmac</h1>
+  <a href="https://www.youtube.com/@M8DM8C" target="_blank">
+    <button>Visit YouTube Channel</button>
+  </a>
+  <div class="videos-section">
+    <div class="videos-title">Videos</div>
+    <div class="videos" id="videos">
+      Loading videos...
+    </div>
+  </div>
+</div>
+
+<script>
+async function fetchVideos() {
+  const API_KEY = 'AIzaSyA1TpcS3Ej-YbCPisiw2GbWXi4MPlBzFQk';
+  const CHANNEL_ID = 'UC0ud4nQPzZo4PMBVdKTSP5Q'; // MadMac Channel ID
+  const MAX_RESULTS = 3;
+
+  try {
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=${MAX_RESULTS}`);
+    const data = await res.json();
+
+    const videosDiv = document.getElementById('videos');
+    videosDiv.innerHTML = '';
+
+    data.items.forEach(item => {
+      if (item.id.kind === "youtube#video") {
+        const videoId = item.id.videoId;
+        const title = item.snippet.title;
+        const thumbnail = item.snippet.thumbnails.medium.url;
+
+        const videoItem = document.createElement('div');
+        videoItem.className = 'video-item';
+        videoItem.onclick = () => window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
+
+        videoItem.innerHTML = `
+          <div class="video-arrow">➔</div>
+          <div class="video-info">
+            <span>${title}</span>
+            <img src="${thumbnail}" alt="Thumbnail">
+          </div>
+        `;
+
+        videosDiv.appendChild(videoItem);
+      }
+    });
+  } catch (error) {
+    document.getElementById('videos').innerText = 'Failed to load videos.';
+  }
+}
+
+fetchVideos();
+</script>
+
+</body>
+</html>
