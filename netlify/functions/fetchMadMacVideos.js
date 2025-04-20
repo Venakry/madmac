@@ -1,5 +1,3 @@
-// /netlify/functions/fetchMadMacVideos.js
-
 import fetch from 'node-fetch';
 import { JSDOM } from 'jsdom';
 
@@ -12,33 +10,31 @@ export async function handler(event, context) {
     const document = dom.window.document;
 
     const scripts = [...document.querySelectorAll('script')];
-    const ytInitialDataScript = scripts.find(s => s.textContent.includes('var ytInitialData ='));
-    if (!ytInitialDataScript) throw new Error('Cannot find ytInitialData');
+    const ytDataScript = scripts.find(s => s.textContent.includes('var ytInitialData'));
 
-    const ytInitialDataText = ytInitialDataScript.textContent;
-    const jsonData = JSON.parse(
-      ytInitialDataText.match(/var ytInitialData = (.*?);<\/script>/s)?.[1] ||
-      ytInitialDataText.replace('var ytInitialData = ', '').slice(0, -1)
-    );
+    if (!ytDataScript) {
+      throw new Error('Could not find initial YouTube data.');
+    }
 
-    const videoRenderer =
-      jsonData.contents
-        ?.twoColumnBrowseResultsRenderer
-        ?.tabs?.[1]
-        ?.tabRenderer
-        ?.content
-        ?.sectionListRenderer
-        ?.contents?.[0]
-        ?.itemSectionRenderer
-        ?.contents?.[0]
-        ?.gridRenderer
-        ?.items || [];
+    const ytDataText = ytDataScript.textContent
+      .replace('var ytInitialData = ', '')
+      .replace(/;$/, '');
 
-    const videos = videoRenderer
-      .filter(item => item.gridVideoRenderer)
-      .slice(0, 3)
+    const jsonData = JSON.parse(ytDataText);
+
+    const videoItems = jsonData.contents
+      ?.twoColumnBrowseResultsRenderer
+      ?.tabs?.[0]
+      ?.tabRenderer
+      ?.content
+      ?.richGridRenderer
+      ?.contents || [];
+
+    const videos = videoItems
+      .filter(item => item.richItemRenderer && item.richItemRenderer.content.videoRenderer)
+      .slice(0, 3) // Only 3 recent videos
       .map(item => {
-        const video = item.gridVideoRenderer;
+        const video = item.richItemRenderer.content.videoRenderer;
         return {
           title: video.title.runs[0].text,
           videoId: video.videoId,
@@ -57,6 +53,7 @@ export async function handler(event, context) {
     };
 
   } catch (err) {
+    console.error(err);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: err.message })
