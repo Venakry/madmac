@@ -2,120 +2,127 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MadMac Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MadMac VRFS Profile</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Poppins', sans-serif;
-      background: radial-gradient(circle at top, #1a1a1a, #000);
-      min-height: 100vh;
-      overflow: hidden;
-      position: relative;
-      padding: 20px;
+      background: #0d0d0d;
       color: white;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: start;
+      padding: 30px 20px;
     }
-    .particles { position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 0; }
     .profile {
-      position: relative;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
+      background: #1a1a1a;
+      border-radius: 20px;
       padding: 30px;
-      border-radius: 24px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      text-align: center;
       width: 100%;
       max-width: 420px;
-      margin: auto;
-      z-index: 1;
-      animation: fadeIn 1s ease;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(255,0,0,0.3);
+      animation: fadeIn 1s ease forwards;
     }
-    @keyframes fadeIn { from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
     .profile img {
-      width: 130px;
-      height: 130px;
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
+      border: 4px solid red;
       object-fit: cover;
       margin-bottom: 20px;
-      border: 4px solid #fff;
     }
-    .profile h1 { font-size: 26px; margin-bottom: 10px; }
+    .profile h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      color: #ff4d4d;
+    }
     .profile a button {
-      background: #00ffe0;
-      color: black;
+      background: red;
+      color: white;
       border: none;
-      padding: 14px 30px;
+      padding: 12px 24px;
       font-size: 16px;
-      font-weight: 700;
-      border-radius: 14px;
+      font-weight: bold;
+      border-radius: 12px;
       margin: 20px 0;
       cursor: pointer;
       width: 100%;
-      animation: pulse 2s infinite;
       transition: 0.3s;
     }
-    .profile a button:hover { background: #00bfa6; }
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(0,255,224,0.7); }
-      70% { box-shadow: 0 0 20px 20px rgba(0,255,224,0); }
-      100% { box-shadow: 0 0 0 0 rgba(0,255,224,0); }
+    .profile a button:hover {
+      background: #ff1a1a;
     }
-    .videos-section { margin-top: 20px; text-align: left; }
-    .videos-title { font-size: 20px; font-weight: 600; margin-bottom: 15px; }
-    .videos { display: flex; flex-direction: column; gap: 15px; }
-    .video-item {
+    .videos-section {
+      margin-top: 20px;
+      text-align: left;
+    }
+    .videos-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #ff4d4d;
+    }
+    .videos {
       display: flex;
-      align-items: center;
-      background: rgba(255,255,255,0.1);
+      flex-direction: column;
+      gap: 15px;
+    }
+    .video-item {
+      background: #262626;
       padding: 12px;
       border-radius: 12px;
-      color: white;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.3s;
-    }
-    .video-item:hover { background: rgba(255,255,255,0.2); transform: scale(1.02); }
-    .video-arrow { font-size: 20px; margin-right: 10px; }
-    .video-info {
       display: flex;
       align-items: center;
       gap: 10px;
-      flex: 1;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
     }
-    .video-info img {
-      width: 70px;
-      height: 50px;
+    .video-item:hover {
+      background: #333;
+      transform: scale(1.02);
+    }
+    .video-item img {
+      width: 90px;
+      height: 60px;
       object-fit: cover;
       border-radius: 8px;
-      transition: transform 0.3s;
     }
-    .video-item:hover .video-info img { transform: scale(1.05); }
-    .video-info span { font-size: 14px; flex: 1; }
+    .video-item span {
+      font-size: 14px;
+      flex: 1;
+    }
     #loader {
-      width: 50px;
-      height: 50px;
-      border: 6px solid #fff;
-      border-top: 6px solid #00ffe0;
+      width: 40px;
+      height: 40px;
+      border: 5px solid #fff;
+      border-top: 5px solid red;
       border-radius: 50%;
       animation: spin 1s linear infinite;
-      margin: 30px auto;
+      margin: 20px auto;
     }
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
     }
   </style>
 </head>
 <body>
 
-<canvas class="particles"></canvas>
-
 <div class="profile">
   <img src="madmac pfp.jpeg" alt="MadMac Logo">
-  <h1>madmac</h1>
+  <h1>MadMac</h1>
   <a href="https://www.youtube.com/@M8DM8C" target="_blank">
     <button>Visit YouTube Channel</button>
   </a>
+
   <div class="videos-section">
     <div class="videos-title">Latest Videos</div>
     <div id="loader"></div>
@@ -124,54 +131,51 @@
 </div>
 
 <script type="module">
-async function fetchVideos() {
-  const videosDiv = document.getElementById('videos');
-  const loader = document.getElementById('loader');
-  
-  const API_KEY = 'AIzaSyBW-oOZhaG64SvlCCWob398liGMYC-64qw'; // put your real API key here
-  const CHANNEL_ID = 'UC0PSbKuOBsu5YwySdOx1bGw'; // madmac real channel id
+(async () => {
+  const API_KEY = 'AIzaSyBW-oOZhaG64SvlCCWob398liGMYC-64qw';
+  const CHANNEL_ID = 'UC0PSbKuOBsu5YwySdOx1bGw';
   const MAX_RESULTS = 3;
 
-  try {
-    const response = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=${MAX_RESULTS}`);
-    const data = await response.json();
+  async function fetchVideos() {
+    const videosDiv = document.getElementById('videos');
+    const loader = document.getElementById('loader');
 
-    if (!data.items) throw new Error('no videos found');
+    try {
+      const response = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=${MAX_RESULTS}`);
+      const data = await response.json();
 
-    videosDiv.innerHTML = '';
-    loader.style.display = 'none';
-    videosDiv.style.display = 'flex';
+      if (!data.items) throw new Error('no videos found');
 
-    data.items.forEach(item => {
-      if (item.id.kind === "youtube#video") {
-        const videoId = item.id.videoId;
-        const title = item.snippet.title;
-        const thumbnail = item.snippet.thumbnails.medium.url;
+      videosDiv.innerHTML = '';
+      loader.style.display = 'none';
+      videosDiv.style.display = 'flex';
 
-        const videoItem = document.createElement('div');
-        videoItem.className = 'video-item';
-        videoItem.onclick = () => window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
-        videoItem.innerHTML = `
-          <div class="video-arrow">&#10148;</div>
-          <div class="video-info">
+      data.items.forEach(item => {
+        if (item.id.kind === "youtube#video") {
+          const videoId = item.id.videoId;
+          const title = item.snippet.title;
+          const thumbnail = item.snippet.thumbnails.medium.url;
+
+          const videoItem = document.createElement('div');
+          videoItem.className = 'video-item';
+          videoItem.onclick = () => window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
+          videoItem.innerHTML = `
             <img src="${thumbnail}" alt="Thumbnail">
             <span>${title}</span>
-          </div>`;
-        videosDiv.appendChild(videoItem);
-      }
-    });
+          `;
+          videosDiv.appendChild(videoItem);
+        }
+      });
 
-  } catch (error) {
-    console.error('failed to fetch videos:', error);
-    videosDiv.innerHTML = '<div>Failed to load videos.</div>';
+    } catch (error) {
+      console.error('failed to fetch videos:', error);
+      videosDiv.innerHTML = '<div>Failed to load videos.</div>';
+    }
   }
-}
 
-fetchVideos();
-setInterval(fetchVideos, 10 * 60 * 1000);
-</script>
-fetchVideos();
-setInterval(fetchVideos, 10 * 60 * 1000);
+  await fetchVideos();
+  setInterval(fetchVideos, 10 * 60 * 1000);
+})();
 </script>
 
 </body>
