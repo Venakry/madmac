@@ -235,6 +235,54 @@
 </head>
 <body>
 
+<div class="stadium-light"></div>
+
+<canvas id="particles" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></canvas>
+
+<div class="profile">
+  <img src="madmac pfp.jpeg" alt="MadMac Logo" id="profilePic">
+  <h1 id="madmacName">MadMac</h1>
+  <div id="proBadge" class="pro-badge">PRO VR PLAYER</div>
+  <div class="sub-count" id="subCount">Loading subs...</div>
+
+  <div class="buttons">
+    <a href="https://www.youtube.com/@M8DM8C" target="_blank">
+      <button class="yt-button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" viewBox="0 0 24 24">
+          <path d="M23.5 6.2s-.2-1.7-.8-2.4c-.7-.9-1.5-1-1.8-1-2.5-.2-6.2-.2-6.2-.2h-.1s-3.7 0-6.2.2c-.4 0-1.2.1-1.8 1C5.7 4.5 5.5 6.2 5.5 6.2S5.3 8.1 5.3 10v4c0 1.9.2 3.8.2 3.8s.2 1.7.8 2.4c.7.9 1.6 1 2 1 1.5.1 6.2.2 6.2.2s3.7 0 6.2-.2c.4 0 1.2-.1 1.8-1 .6-.7.8-2.4.8-2.4s.2-1.9.2-3.8v-4c0-1.9-.2-3.8-.2-3.8zM9.8 15.5v-7l6.2 3.5-6.2 3.5z"/>
+        </svg>
+        YouTube
+      </button>
+    </a>
+    <a href="https://discord.gg/qBemfdPcZ2" target="_blank">
+      <button class="discord-button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" viewBox="0 0 71 55">
+          <path d="M60.104 4.552A58.018 58.018 0 0045.232.889c-.258.453-.56 1.048-.767 1.523a55.438 55.438 0 00-16.928 0 51.868 51.868 0 00-.783-1.523 58.06 58.06 0 00-14.872 3.663C2.892 21.982-.708 39.06.212 55c5.978 4.404 12.096 7.125 18.256 8.628a43.686 43.686 0 003.622-5.887c-2.004-.759-3.905-1.675-5.74-2.727.481-.35.953-.705 1.416-1.074 11.351 5.235 23.64 5.235 34.845 0 .48.369.951.724 1.416 1.074a45.698 45.698 0 00-5.74 2.727 43.593 43.593 0 003.621 5.887c6.16-1.503 12.279-4.224 18.256-8.628.93-15.94-2.387-33.018-18.368-50.448zM23.725 37.432c-3.19 0-5.783-2.916-5.783-6.514 0-3.597 2.566-6.514 5.783-6.514 3.235 0 5.8 2.917 5.8 6.514 0 3.598-2.566 6.514-5.8 6.514zm23.591 0c-3.19 0-5.783-2.916-5.783-6.514 0-3.597 2.566-6.514 5.783-6.514 3.235 0 5.8 2.917 5.8 6.514 0 3.598-2.565 6.514-5.8 6.514z"/>
+        </svg>
+        Discord
+      </button>
+    </a>
+  </div>
+
+  <div class="videos-section">
+    <div class="videos-title">Latest Videos</div>
+    <div id="loader" style="width:40px;height:40px;border:5px solid #fff;border-top:5px solid red;border-radius:50%;animation:spin 1s linear infinite;margin:20px auto;"></div>
+    <div class="videos" id="videos" style="display:none;"></div>
+    <button id="loadMore" style="display:none;">Load More</button>
+  </div>
+</div>
+
+<div class="popup" id="popup">
+  <div class="popup-close" id="popupClose">&times;</div>
+  <iframe id="popupFrame" src=""></iframe>
+</div>
+
+<!-- Soccer explosion container -->
+<div id="soccerExplosion" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2;"></div>
+
+<!-- Secret bottom easter egg message -->
+<div id="ballonMessage" style="display:none;position:fixed;bottom:0;width:100%;background:#ff0000;color:white;text-align:center;padding:10px;font-weight:bold;font-size:18px;z-index:3;">MadMac for Ballon d'Or 2025 🏆</div>
+
 <script type="module">
 const API_KEY = 'AIzaSyBW-oOZhaG64SvlCCWob398liGMYC-64qw';
 const CHANNEL_ID = 'UC0PSbKuOBsu5YwySdOx1bGw';
