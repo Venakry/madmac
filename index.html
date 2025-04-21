@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MadMac VRFS Profile</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
@@ -49,9 +49,8 @@
       font-size: 12px;
       color: white;
       border-radius: 10px;
-      display: inline-block;
-      margin-top: 5px;
       display: none;
+      margin-top: 5px;
       animation: fadeIn 0.5s ease forwards;
     }
     .sub-count {
@@ -79,9 +78,6 @@
     }
     .yt-button {
       background: #ff0000;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
     .yt-button:hover {
       background: #cc0000;
@@ -89,9 +85,6 @@
     }
     .discord-button {
       background: #5865F2;
-      display: flex;
-      align-items: center;
-      gap: 8px;
       box-shadow: 0 0 15px #5865F2;
       animation: pulse 2s infinite;
     }
@@ -183,10 +176,9 @@
       width: 100%;
       height: 100%;
       background: rgba(0,0,0,0.8);
-      display: flex;
+      display: none;
       justify-content: center;
       align-items: center;
-      display: none;
       z-index: 1000;
     }
     .popup iframe {
@@ -247,20 +239,10 @@
 
   <div class="buttons">
     <a href="https://www.youtube.com/@M8DM8C" target="_blank">
-      <button class="yt-button">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" viewBox="0 0 24 24">
-          <path d="M23.5 6.2s-.2-1.7-.8-2.4c-.7-.9-1.5-1-1.8-1-2.5-.2-6.2-.2-6.2-.2h-.1s-3.7 0-6.2.2c-.4 0-1.2.1-1.8 1C5.7 4.5 5.5 6.2 5.5 6.2S5.3 8.1 5.3 10v4c0 1.9.2 3.8.2 3.8s.2 1.7.8 2.4c.7.9 1.6 1 2 1 1.5.1 6.2.2 6.2.2s3.7 0 6.2-.2c.4 0 1.2-.1 1.8-1 .6-.7.8-2.4.8-2.4s.2-1.9.2-3.8v-4c0-1.9-.2-3.8-.2-3.8zM9.8 15.5v-7l6.2 3.5-6.2 3.5z"/>
-        </svg>
-        YouTube
-      </button>
+      <button class="yt-button">YouTube</button>
     </a>
     <a href="https://discord.gg/qBemfdPcZ2" target="_blank">
-      <button class="discord-button">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" viewBox="0 0 71 55">
-          <path d="M60.104 4.552A58.018 58.018 0 0045.232.889c-.258.453-.56 1.048-.767 1.523a55.438 55.438 0 00-16.928 0 51.868 51.868 0 00-.783-1.523 58.06 58.06 0 00-14.872 3.663C2.892 21.982-.708 39.06.212 55c5.978 4.404 12.096 7.125 18.256 8.628a43.686 43.686 0 003.622-5.887c-2.004-.759-3.905-1.675-5.74-2.727.481-.35.953-.705 1.416-1.074 11.351 5.235 23.64 5.235 34.845 0 .48.369.951.724 1.416 1.074a45.698 45.698 0 00-5.74 2.727 43.593 43.593 0 003.621 5.887c6.16-1.503 12.279-4.224 18.256-8.628.93-15.94-2.387-33.018-18.368-50.448zM23.725 37.432c-3.19 0-5.783-2.916-5.783-6.514 0-3.597 2.566-6.514 5.783-6.514 3.235 0 5.8 2.917 5.8 6.514 0 3.598-2.566 6.514-5.8 6.514zm23.591 0c-3.19 0-5.783-2.916-5.783-6.514 0-3.597 2.566-6.514 5.783-6.514 3.235 0 5.8 2.917 5.8 6.514 0 3.598-2.565 6.514-5.8 6.514z"/>
-        </svg>
-        Discord
-      </button>
+      <button class="discord-button">Discord</button>
     </a>
   </div>
 
@@ -280,14 +262,20 @@
 <!-- Soccer explosion container -->
 <div id="soccerExplosion" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2;"></div>
 
-<!-- Secret bottom easter egg message -->
-<div id="ballonMessage" style="display:none;position:fixed;bottom:0;width:100%;background:#ff0000;color:white;text-align:center;padding:10px;font-weight:bold;font-size:18px;z-index:3;">MadMac for Ballon d'Or 2025 🏆</div>
+<!-- Secret ballon d'or easter egg message -->
+<div id="ballonMessage" style="display:none;position:fixed;bottom:0;width:100%;background:#ff0000;color:white;text-align:center;padding:10px;font-weight:bold;font-size:18px;z-index:3;">
+  MadMac for Ballon d'Or 2025 🏆
+</div>
 
+<!-- (script chunk will come next here) -->
+
+</body>
 <script type="module">
 const API_KEY = 'AIzaSyBW-oOZhaG64SvlCCWob398liGMYC-64qw';
 const CHANNEL_ID = 'UC0PSbKuOBsu5YwySdOx1bGw';
 const MAX_RESULTS = 12;
 
+// elements
 const videosDiv = document.getElementById('videos');
 const loader = document.getElementById('loader');
 const subCount = document.getElementById('subCount');
@@ -302,48 +290,49 @@ const proBadge = document.getElementById('proBadge');
 const particlesCanvas = document.getElementById('particles');
 const ctx = particlesCanvas.getContext('2d');
 
+// states
 let videosLoaded = 0;
 let allVideos = [];
 let clickCount = 0;
-let keysPressed = [];
+let konamiProgress = 0;
 
+// videos
 async function fetchVideos() {
   try {
     const res = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=${MAX_RESULTS}`);
     const data = await res.json();
     allVideos = data.items.filter(item => item.id.kind === "youtube#video");
-
-    videosDiv.innerHTML = '';
     loader.style.display = 'none';
     videosDiv.style.display = 'flex';
     loadMore();
   } catch (err) {
-    console.error('failed to fetch videos:', err);
+    console.error('Failed to fetch videos:', err);
     videosDiv.innerHTML = '<div>Failed to load videos.</div>';
   }
 }
 
 function loadMore() {
-  const videosToLoad = allVideos.slice(videosLoaded, videosLoaded + 3);
-  videosToLoad.forEach((item, index) => {
+  const slice = allVideos.slice(videosLoaded, videosLoaded + 3);
+  slice.forEach((item, idx) => {
     const videoId = item.id.videoId;
     const title = item.snippet.title;
-    const thumbnail = item.snippet.thumbnails.medium.url;
+    const thumb = item.snippet.thumbnails.medium.url;
 
-    const videoItem = document.createElement('div');
-    videoItem.className = 'video-item';
-    videoItem.onclick = () => openPopup(videoId);
-    videoItem.innerHTML = `
-      ${videosLoaded === 0 && index === 0 ? '<div class="latest-badge">LATEST</div>' : ''}
-      <img src="${thumbnail}" alt="Thumbnail">
+    const div = document.createElement('div');
+    div.className = 'video-item';
+    div.onclick = () => openPopup(videoId);
+    div.innerHTML = `
+      ${videosLoaded === 0 && idx === 0 ? '<div class="latest-badge">LATEST</div>' : ''}
+      <img src="${thumb}" alt="Thumbnail">
       <span>${title}</span>
     `;
-    videosDiv.appendChild(videoItem);
+    videosDiv.appendChild(div);
   });
   videosLoaded += 3;
   loadMoreBtn.style.display = videosLoaded >= allVideos.length ? 'none' : 'block';
 }
 
+// subscribers
 async function fetchSubs() {
   try {
     const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${CHANNEL_ID}&part=statistics`);
@@ -355,31 +344,29 @@ async function fetchSubs() {
   }
 }
 
+// popup
 function openPopup(videoId) {
   popupFrame.src = `https://www.youtube.com/embed/${videoId}`;
   popup.style.display = 'flex';
   document.body.classList.add('shake');
   setTimeout(() => document.body.classList.remove('shake'), 500);
 }
-
 popupClose.onclick = () => {
   popup.style.display = 'none';
   popupFrame.src = '';
 };
 
-// Floating particles background
+// particles
 let particles = [];
-
 function resizeCanvas() {
   particlesCanvas.width = window.innerWidth;
   particlesCanvas.height = window.innerHeight;
 }
-
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
 function createParticles() {
-  for (let i = 0; i < 60; i++) {
+  for (let i = 0; i < 70; i++) {
     particles.push({
       x: Math.random() * particlesCanvas.width,
       y: Math.random() * particlesCanvas.height,
@@ -389,7 +376,6 @@ function createParticles() {
     });
   }
 }
-
 function animateParticles() {
   ctx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
   particles.forEach(p => {
@@ -399,17 +385,15 @@ function animateParticles() {
     ctx.fill();
     p.x += p.speedX;
     p.y += p.speedY;
-
     if (p.x < 0 || p.x > particlesCanvas.width) p.speedX = -p.speedX;
     if (p.y < 0 || p.y > particlesCanvas.height) p.speedY = -p.speedY;
   });
   requestAnimationFrame(animateParticles);
 }
-
 createParticles();
 animateParticles();
 
-// Soccer ball explosion on 10 clicks
+// soccer click explosion
 document.body.addEventListener('click', (e) => {
   if (e.target.closest('.profile, .popup')) return;
   clickCount++;
@@ -438,7 +422,7 @@ document.body.addEventListener('click', (e) => {
   }
 });
 
-// Ballon d'Or easter egg
+// ballon d'or message after scroll
 window.addEventListener('scroll', () => {
   if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
     setTimeout(() => {
@@ -447,23 +431,22 @@ window.addEventListener('scroll', () => {
   }
 });
 
-// Konami code easter egg
-const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-let konamiIndex = 0;
-
+// konami code easter egg
+const konamiCode = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+let currentKonami = 0;
 window.addEventListener('keydown', (e) => {
-  if (e.key === konamiCode[konamiIndex]) {
-    konamiIndex++;
-    if (konamiIndex === konamiCode.length) {
+  if (e.key === konamiCode[currentKonami]) {
+    currentKonami++;
+    if (currentKonami === konamiCode.length) {
       proBadge.style.display = 'inline-block';
-      konamiIndex = 0;
+      currentKonami = 0;
     }
   } else {
-    konamiIndex = 0;
+    currentKonami = 0;
   }
 });
 
-// Super Mode L key
+// super mode L
 window.addEventListener('keydown', (e) => {
   if (e.key === 'l' || e.key === 'L') {
     const superText = document.createElement('div');
@@ -478,11 +461,12 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-// MadMac name click easter egg
+// click MadMac name easter egg
 madmacName.onclick = () => {
   alert('You found a secret! ⚽ MadMac is the GOAT!');
 };
 
+// start
 await fetchVideos();
 await fetchSubs();
 loadMoreBtn.onclick = loadMore;
