@@ -16,14 +16,7 @@
       padding: 20px;
       color: white;
     }
-    .particles {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      z-index: 0;
-    }
+    .particles { position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 0; }
     .profile {
       position: relative;
       background: rgba(255, 255, 255, 0.1);
@@ -38,10 +31,7 @@
       z-index: 1;
       animation: fadeIn 1s ease;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeIn { from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
     .profile img {
       width: 130px;
       height: 130px;
@@ -116,7 +106,6 @@
     }
   </style>
 </head>
-
 <body>
 
 <canvas class="particles"></canvas>
@@ -135,101 +124,12 @@
 </div>
 
 <script type="module">
-const canvas = document.querySelector('.particles');
-const ctx = canvas.getContext('2d');
-let particles = [];
-
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-
-function createParticles() {
-  for (let i = 0; i < 60; i++) {
-    particles.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      size: Math.random() * 3,
-      speedX: (Math.random() - 0.5) * 0.5,
-      speedY: (Math.random() - 0.5) * 0.5
-    });
-  }
-}
-
-function animateParticles() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  particles.forEach(p => {
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-    ctx.fillStyle = '#00ffe0';
-    ctx.fill();
-    p.x += p.speedX;
-    p.y += p.speedY;
-    if (p.x < 0 || p.x > canvas.width) p.speedX = -p.speedX;
-    if (p.y < 0 || p.y > canvas.height) p.speedY = -p.speedY;
-  });
-  requestAnimationFrame(animateParticles);
-}
-
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
-createParticles();
-animateParticles();
-
 async function fetchVideos() {
   const videosDiv = document.getElementById('videos');
   const loader = document.getElementById('loader');
-
   try {
-    let videos = [];
-
-    if (location.protocol === 'file:') {
-      console.log('local mode: scraping youtube through proxy');
-
-      const res = await fetch('https://corsproxy.io/?https://www.youtube.com/@M8DM8C/videos');
-      const text = await res.text();
-
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(text, 'text/html');
-
-      const scripts = [...doc.querySelectorAll('script')];
-      const ytDataScript = scripts.find(s => s.textContent.includes('var ytInitialData'));
-
-      if (!ytDataScript) throw new Error('could not find ytInitialData in local mode');
-
-      const ytDataText = ytDataScript.textContent
-        .replace('var ytInitialData = ', '')
-        .replace(/;$/, '');
-
-      const jsonData = JSON.parse(ytDataText);
-
-      const videoItems = jsonData.contents
-        ?.twoColumnBrowseResultsRenderer
-        ?.tabs?.[0]
-        ?.tabRenderer
-        ?.content
-        ?.richGridRenderer
-        ?.contents || [];
-
-      videos = videoItems
-        .filter(item => item.richItemRenderer && item.richItemRenderer.content.videoRenderer)
-        .slice(0, 3)
-        .map(item => {
-          const video = item.richItemRenderer.content.videoRenderer;
-          return {
-            title: video.title.runs[0].text,
-            videoId: video.videoId,
-            thumbnail: video.thumbnail.thumbnails.pop().url,
-            link: `https://www.youtube.com/watch?v=${video.videoId}`
-          };
-        });
-
-    } else {
-      console.log('online mode: fetching from netlify function');
-
-      const response = await fetch('/.netlify/functions/fetchMadMacVideos');
-      videos = await response.json();
-    }
+    const response = await fetch('/.netlify/functions/fetchMadMacVideos');
+    const videos = await response.json();
 
     videosDiv.innerHTML = '';
     loader.style.display = 'none';
@@ -239,17 +139,14 @@ async function fetchVideos() {
       const videoItem = document.createElement('div');
       videoItem.className = 'video-item';
       videoItem.onclick = () => window.open(video.link, '_blank');
-
       videoItem.innerHTML = `
         <div class="video-arrow">&#10148;</div>
         <div class="video-info">
           <img src="${video.thumbnail}" alt="Thumbnail">
           <span>${video.title}</span>
-        </div>
-      `;
+        </div>`;
       videosDiv.appendChild(videoItem);
     });
-
   } catch (error) {
     console.error('failed to fetch videos:', error);
     videosDiv.innerHTML = '<div>Failed to load videos.</div>';
@@ -258,7 +155,6 @@ async function fetchVideos() {
 
 fetchVideos();
 setInterval(fetchVideos, 10 * 60 * 1000);
-
 </script>
 
 </body>
