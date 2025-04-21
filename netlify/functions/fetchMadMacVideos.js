@@ -3,7 +3,7 @@ import { JSDOM } from 'jsdom';
 
 export async function handler(event, context) {
   try {
-    const res = await fetch('https://www.youtube.com/channel/UC0ud4nQPzZo4PMBVdKTSP5Q/videos', {
+    const res = await fetch('https://www.youtube.com/@M8DM8C/videos', {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
         'Accept-Language': 'en-US,en;q=0.9'
@@ -18,7 +18,7 @@ export async function handler(event, context) {
     const ytDataScript = scripts.find(s => s.textContent.includes('var ytInitialData'));
 
     if (!ytDataScript) {
-      throw new Error('could not find ytInitialData. youtube probably changed layout again.');
+      throw new Error('could not find ytInitialData. youtube maybe changed again.');
     }
 
     const ytDataText = ytDataScript.textContent
