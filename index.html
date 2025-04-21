@@ -3,57 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MadMac VRFS Profile</title>
+  <title>MadMac Website</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Poppins', sans-serif;
-      background: #0d0d0d;
+      background: linear-gradient(to bottom, #330000, #000000);
       color: white;
       min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: start;
       padding: 30px 20px;
     }
     .profile {
       background: #1a1a1a;
       border-radius: 20px;
       padding: 30px;
-      width: 100%;
       max-width: 420px;
+      margin: auto;
       text-align: center;
-      box-shadow: 0 0 30px rgba(255,0,0,0.3);
+      box-shadow: 0 0 25px rgba(255,0,0,0.5);
       animation: fadeIn 1s ease forwards;
     }
     .profile img {
       width: 120px;
       height: 120px;
       border-radius: 50%;
-      border: 4px solid red;
-      object-fit: cover;
+      border: 3px solid #ff4d4d;
+      box-shadow: 0 0 15px red;
       margin-bottom: 20px;
     }
     .profile h1 {
       font-size: 28px;
-      margin-bottom: 10px;
       color: #ff4d4d;
+      margin-bottom: 10px;
     }
-    .profile a button {
+    .sub-count {
+      font-size: 14px;
+      color: #ccc;
+      margin-bottom: 20px;
+    }
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+    .buttons a button {
       background: red;
       color: white;
       border: none;
-      padding: 12px 24px;
-      font-size: 16px;
+      padding: 10px 18px;
+      font-size: 14px;
       font-weight: bold;
-      border-radius: 12px;
-      margin: 20px 0;
+      border-radius: 10px;
       cursor: pointer;
-      width: 100%;
       transition: 0.3s;
     }
-    .profile a button:hover {
+    .buttons a button:hover {
       background: #ff1a1a;
     }
     .videos-section {
@@ -79,11 +85,12 @@
       align-items: center;
       gap: 10px;
       cursor: pointer;
-      transition: background 0.3s, transform 0.3s;
+      transition: transform 0.3s, background 0.3s;
+      position: relative;
     }
     .video-item:hover {
       background: #333;
-      transform: scale(1.02);
+      transform: rotate(-1deg) scale(1.02);
     }
     .video-item img {
       width: 90px;
@@ -112,6 +119,59 @@
       from {opacity: 0; transform: translateY(20px);}
       to {opacity: 1; transform: translateY(0);}
     }
+    .latest-badge {
+      position: absolute;
+      top: -8px;
+      left: -8px;
+      background: red;
+      color: white;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 3px 5px;
+      border-radius: 6px;
+    }
+    #loadMore {
+      margin: 20px auto 0;
+      display: block;
+      background: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #loadMore:hover {
+      background: #ff1a1a;
+    }
+    .popup {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      display: none;
+      z-index: 1000;
+    }
+    .popup iframe {
+      width: 90%;
+      max-width: 600px;
+      height: 340px;
+      border: none;
+      border-radius: 12px;
+    }
+    .popup-close {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      font-size: 30px;
+      color: white;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -119,62 +179,113 @@
 <div class="profile">
   <img src="madmac pfp.jpeg" alt="MadMac Logo">
   <h1>MadMac</h1>
-  <a href="https://www.youtube.com/@M8DM8C" target="_blank">
-    <button>Visit YouTube Channel</button>
-  </a>
+  <div class="sub-count" id="subCount">Loading subs...</div>
+
+  <div class="buttons">
+    <a href="https://www.youtube.com/@M8DM8C" target="_blank"><button>YouTube</button></a>
+    <a href="https://discord.gg/qBemfdPcZ2" target="_blank"><button>Discord</button></a>
+  </div>
 
   <div class="videos-section">
     <div class="videos-title">Latest Videos</div>
     <div id="loader"></div>
     <div class="videos" id="videos" style="display: none;"></div>
+    <button id="loadMore" style="display: none;">Load More</button>
   </div>
+</div>
+
+<div class="popup" id="popup">
+  <div class="popup-close" id="popupClose">&times;</div>
+  <iframe id="popupFrame" src=""></iframe>
 </div>
 
 <script type="module">
 (async () => {
   const API_KEY = 'AIzaSyBW-oOZhaG64SvlCCWob398liGMYC-64qw';
   const CHANNEL_ID = 'UC0PSbKuOBsu5YwySdOx1bGw';
-  const MAX_RESULTS = 3;
+  const MAX_RESULTS = 12;
+
+  const videosDiv = document.getElementById('videos');
+  const loader = document.getElementById('loader');
+  const subCount = document.getElementById('subCount');
+  const loadMoreBtn = document.getElementById('loadMore');
+  const popup = document.getElementById('popup');
+  const popupFrame = document.getElementById('popupFrame');
+  const popupClose = document.getElementById('popupClose');
+
+  let videosLoaded = 0;
+  let allVideos = [];
 
   async function fetchVideos() {
-    const videosDiv = document.getElementById('videos');
-    const loader = document.getElementById('loader');
-
     try {
-      const response = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=${MAX_RESULTS}`);
-      const data = await response.json();
-
-      if (!data.items) throw new Error('no videos found');
+      const res = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=${MAX_RESULTS}`);
+      const data = await res.json();
+      allVideos = data.items.filter(item => item.id.kind === "youtube#video");
 
       videosDiv.innerHTML = '';
       loader.style.display = 'none';
       videosDiv.style.display = 'flex';
 
-      data.items.forEach(item => {
-        if (item.id.kind === "youtube#video") {
-          const videoId = item.id.videoId;
-          const title = item.snippet.title;
-          const thumbnail = item.snippet.thumbnails.medium.url;
-
-          const videoItem = document.createElement('div');
-          videoItem.className = 'video-item';
-          videoItem.onclick = () => window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
-          videoItem.innerHTML = `
-            <img src="${thumbnail}" alt="Thumbnail">
-            <span>${title}</span>
-          `;
-          videosDiv.appendChild(videoItem);
-        }
-      });
-
-    } catch (error) {
-      console.error('failed to fetch videos:', error);
+      loadMore();
+    } catch (err) {
+      console.error('failed to fetch videos:', err);
       videosDiv.innerHTML = '<div>Failed to load videos.</div>';
     }
   }
 
+  function loadMore() {
+    const videosToLoad = allVideos.slice(videosLoaded, videosLoaded + 3);
+    videosToLoad.forEach((item, index) => {
+      const videoId = item.id.videoId;
+      const title = item.snippet.title;
+      const thumbnail = item.snippet.thumbnails.medium.url;
+
+      const videoItem = document.createElement('div');
+      videoItem.className = 'video-item';
+      videoItem.onclick = () => openPopup(videoId);
+
+      videoItem.innerHTML = `
+        ${videosLoaded === 0 && index === 0 ? '<div class="latest-badge">LATEST</div>' : ''}
+        <img src="${thumbnail}" alt="Thumbnail">
+        <span>${title}</span>
+      `;
+
+      videosDiv.appendChild(videoItem);
+    });
+
+    videosLoaded += 3;
+    if (videosLoaded >= allVideos.length) {
+      loadMoreBtn.style.display = 'none';
+    } else {
+      loadMoreBtn.style.display = 'block';
+    }
+  }
+
+  async function fetchSubs() {
+    try {
+      const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${CHANNEL_ID}&part=statistics`);
+      const data = await res.json();
+      const count = data.items[0].statistics.subscriberCount;
+      subCount.innerText = `${parseInt(count).toLocaleString()} subscribers`;
+    } catch {
+      subCount.innerText = 'Subscribers hidden';
+    }
+  }
+
+  function openPopup(videoId) {
+    popupFrame.src = `https://www.youtube.com/embed/${videoId}`;
+    popup.style.display = 'flex';
+  }
+
+  popupClose.onclick = () => {
+    popup.style.display = 'none';
+    popupFrame.src = '';
+  };
+
   await fetchVideos();
-  setInterval(fetchVideos, 10 * 60 * 1000);
+  await fetchSubs();
+
+  loadMoreBtn.onclick = loadMore;
 })();
 </script>
 
