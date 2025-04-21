@@ -216,6 +216,7 @@
       font-weight: bold;
       color: #ff0000;
       animation: fadeInOut 3s forwards;
+      z-index: 9999;
     }
     @keyframes fadeInOut {
       0% { opacity: 0; }
@@ -259,15 +260,13 @@
   <iframe id="popupFrame" src=""></iframe>
 </div>
 
-<!-- Soccer explosion container -->
 <div id="soccerExplosion" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2;"></div>
 
-<!-- Secret ballon d'or easter egg message -->
-<div id="ballonMessage" style="display:none;position:fixed;bottom:0;width:100%;background:#ff0000;color:white;text-align:center;padding:10px;font-weight:bold;font-size:18px;z-index:3;">
+<div id="ballonMessage" style="display:none;position:fixed;bottom:0;width:100%;background:#ff0000;color:white;text-align:center;padding:10px;font-weight:bold;font-size:18px;z-index:9999;">
   MadMac for Ballon d'Or 2025 🏆
 </div>
 
-<!-- (script chunk will come next here) -->
+<!-- script chunk 3 will come here -->
 
 </body>
 <script type="module">
@@ -275,7 +274,6 @@ const API_KEY = 'AIzaSyBW-oOZhaG64SvlCCWob398liGMYC-64qw';
 const CHANNEL_ID = 'UC0PSbKuOBsu5YwySdOx1bGw';
 const MAX_RESULTS = 12;
 
-// elements
 const videosDiv = document.getElementById('videos');
 const loader = document.getElementById('loader');
 const subCount = document.getElementById('subCount');
@@ -290,13 +288,11 @@ const proBadge = document.getElementById('proBadge');
 const particlesCanvas = document.getElementById('particles');
 const ctx = particlesCanvas.getContext('2d');
 
-// states
 let videosLoaded = 0;
 let allVideos = [];
 let clickCount = 0;
 let konamiProgress = 0;
 
-// videos
 async function fetchVideos() {
   try {
     const res = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=${MAX_RESULTS}`);
@@ -332,7 +328,6 @@ function loadMore() {
   loadMoreBtn.style.display = videosLoaded >= allVideos.length ? 'none' : 'block';
 }
 
-// subscribers
 async function fetchSubs() {
   try {
     const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${CHANNEL_ID}&part=statistics`);
@@ -344,7 +339,6 @@ async function fetchSubs() {
   }
 }
 
-// popup
 function openPopup(videoId) {
   popupFrame.src = `https://www.youtube.com/embed/${videoId}`;
   popup.style.display = 'flex';
@@ -356,7 +350,6 @@ popupClose.onclick = () => {
   popupFrame.src = '';
 };
 
-// particles
 let particles = [];
 function resizeCanvas() {
   particlesCanvas.width = window.innerWidth;
@@ -393,7 +386,6 @@ function animateParticles() {
 createParticles();
 animateParticles();
 
-// soccer click explosion
 document.body.addEventListener('click', (e) => {
   if (e.target.closest('.profile, .popup')) return;
   clickCount++;
@@ -422,16 +414,15 @@ document.body.addEventListener('click', (e) => {
   }
 });
 
-// ballon d'or message after scroll
 window.addEventListener('scroll', () => {
   if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
     setTimeout(() => {
+      ballonMessage.style.zIndex = '9999';
       ballonMessage.style.display = 'block';
     }, 10000);
   }
 });
 
-// konami code easter egg
 const konamiCode = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
 let currentKonami = 0;
 window.addEventListener('keydown', (e) => {
@@ -446,12 +437,12 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-// super mode L
 window.addEventListener('keydown', (e) => {
   if (e.key === 'l' || e.key === 'L') {
     const superText = document.createElement('div');
     superText.innerText = 'SUPER MODE ACTIVATED';
     superText.className = 'easter-egg-text';
+    superText.style.zIndex = '9999';
     document.body.appendChild(superText);
     document.body.style.background = 'linear-gradient(to bottom, #550000, #000)';
     setTimeout(() => {
@@ -461,12 +452,10 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-// click MadMac name easter egg
 madmacName.onclick = () => {
   alert('You found a secret! ⚽ MadMac is the GOAT!');
 };
 
-// start
 await fetchVideos();
 await fetchSubs();
 loadMoreBtn.onclick = loadMore;
