@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MadMac Website</title>
+  <title>MadMac VRFS Profile</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -12,6 +12,8 @@
       background: linear-gradient(to bottom, #330000, #000000);
       color: white;
       min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
       padding: 30px 20px;
     }
     .profile {
@@ -23,6 +25,8 @@
       text-align: center;
       box-shadow: 0 0 25px rgba(255,0,0,0.5);
       animation: fadeIn 1s ease forwards;
+      position: relative;
+      z-index: 10;
     }
     .profile img {
       width: 120px;
@@ -31,11 +35,24 @@
       border: 3px solid #ff4d4d;
       box-shadow: 0 0 15px red;
       margin-bottom: 20px;
+      transition: 0.5s;
     }
     .profile h1 {
       font-size: 28px;
       color: #ff4d4d;
-      margin-bottom: 10px;
+      margin-bottom: 5px;
+      cursor: pointer;
+    }
+    .pro-badge {
+      background: linear-gradient(45deg, #ff4d4d, #ff0000);
+      padding: 5px 10px;
+      font-size: 12px;
+      color: white;
+      border-radius: 10px;
+      display: inline-block;
+      margin-top: 5px;
+      display: none;
+      animation: fadeIn 0.5s ease forwards;
     }
     .sub-count {
       font-size: 14px;
@@ -49,18 +66,49 @@
       justify-content: center;
     }
     .buttons a button {
-      background: red;
-      color: white;
       border: none;
       padding: 10px 18px;
       font-size: 14px;
       font-weight: bold;
       border-radius: 10px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
       transition: 0.3s;
     }
-    .buttons a button:hover {
-      background: #ff1a1a;
+    .yt-button {
+      background: #ff0000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .yt-button:hover {
+      background: #cc0000;
+      animation: shake 0.4s infinite;
+    }
+    .discord-button {
+      background: #5865F2;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 0 15px #5865F2;
+      animation: pulse 2s infinite;
+    }
+    .discord-button:hover {
+      background: #4752c4;
+      box-shadow: 0 0 20px #5865F2;
+    }
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-2px); }
+      50% { transform: translateX(2px); }
+      75% { transform: translateX(-2px); }
+      100% { transform: translateX(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 10px #5865F2; }
+      50% { box-shadow: 0 0 20px #5865F2; }
     }
     .videos-section {
       margin-top: 20px;
@@ -102,23 +150,6 @@
       font-size: 14px;
       flex: 1;
     }
-    #loader {
-      width: 40px;
-      height: 40px;
-      border: 5px solid #fff;
-      border-top: 5px solid red;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 20px auto;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg);}
-      100% { transform: rotate(360deg);}
-    }
-    @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(20px);}
-      to {opacity: 1; transform: translateY(0);}
-    }
     .latest-badge {
       position: absolute;
       top: -8px;
@@ -140,10 +171,11 @@
       border-radius: 12px;
       font-weight: bold;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: 0.3s;
     }
     #loadMore:hover {
       background: #ff1a1a;
+      transform: scale(1.05);
     }
     .popup {
       position: fixed;
@@ -172,122 +204,238 @@
       color: white;
       cursor: pointer;
     }
+    .stadium-light {
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(ellipse at center, rgba(255,255,255,0.15) 0%, transparent 70%);
+      transform: translateX(-50%) rotate(45deg);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .easter-egg-text {
+      position: fixed;
+      top: 20px;
+      width: 100%;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #ff0000;
+      animation: fadeInOut 3s forwards;
+    }
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; }
+    }
   </style>
 </head>
 <body>
 
-<div class="profile">
-  <img src="madmac pfp.jpeg" alt="MadMac Logo">
-  <h1>MadMac</h1>
-  <div class="sub-count" id="subCount">Loading subs...</div>
-
-  <div class="buttons">
-    <a href="https://www.youtube.com/@M8DM8C" target="_blank"><button>YouTube</button></a>
-    <a href="https://discord.gg/qBemfdPcZ2" target="_blank"><button>Discord</button></a>
-  </div>
-
-  <div class="videos-section">
-    <div class="videos-title">Latest Videos</div>
-    <div id="loader"></div>
-    <div class="videos" id="videos" style="display: none;"></div>
-    <button id="loadMore" style="display: none;">Load More</button>
-  </div>
-</div>
-
-<div class="popup" id="popup">
-  <div class="popup-close" id="popupClose">&times;</div>
-  <iframe id="popupFrame" src=""></iframe>
-</div>
-
 <script type="module">
-(async () => {
-  const API_KEY = 'AIzaSyBW-oOZhaG64SvlCCWob398liGMYC-64qw';
-  const CHANNEL_ID = 'UC0PSbKuOBsu5YwySdOx1bGw';
-  const MAX_RESULTS = 12;
+const API_KEY = 'AIzaSyBW-oOZhaG64SvlCCWob398liGMYC-64qw';
+const CHANNEL_ID = 'UC0PSbKuOBsu5YwySdOx1bGw';
+const MAX_RESULTS = 12;
 
-  const videosDiv = document.getElementById('videos');
-  const loader = document.getElementById('loader');
-  const subCount = document.getElementById('subCount');
-  const loadMoreBtn = document.getElementById('loadMore');
-  const popup = document.getElementById('popup');
-  const popupFrame = document.getElementById('popupFrame');
-  const popupClose = document.getElementById('popupClose');
+const videosDiv = document.getElementById('videos');
+const loader = document.getElementById('loader');
+const subCount = document.getElementById('subCount');
+const loadMoreBtn = document.getElementById('loadMore');
+const popup = document.getElementById('popup');
+const popupFrame = document.getElementById('popupFrame');
+const popupClose = document.getElementById('popupClose');
+const soccerExplosion = document.getElementById('soccerExplosion');
+const ballonMessage = document.getElementById('ballonMessage');
+const madmacName = document.getElementById('madmacName');
+const proBadge = document.getElementById('proBadge');
+const particlesCanvas = document.getElementById('particles');
+const ctx = particlesCanvas.getContext('2d');
 
-  let videosLoaded = 0;
-  let allVideos = [];
+let videosLoaded = 0;
+let allVideos = [];
+let clickCount = 0;
+let keysPressed = [];
 
-  async function fetchVideos() {
-    try {
-      const res = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=${MAX_RESULTS}`);
-      const data = await res.json();
-      allVideos = data.items.filter(item => item.id.kind === "youtube#video");
+async function fetchVideos() {
+  try {
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=${MAX_RESULTS}`);
+    const data = await res.json();
+    allVideos = data.items.filter(item => item.id.kind === "youtube#video");
 
-      videosDiv.innerHTML = '';
-      loader.style.display = 'none';
-      videosDiv.style.display = 'flex';
-
-      loadMore();
-    } catch (err) {
-      console.error('failed to fetch videos:', err);
-      videosDiv.innerHTML = '<div>Failed to load videos.</div>';
-    }
+    videosDiv.innerHTML = '';
+    loader.style.display = 'none';
+    videosDiv.style.display = 'flex';
+    loadMore();
+  } catch (err) {
+    console.error('failed to fetch videos:', err);
+    videosDiv.innerHTML = '<div>Failed to load videos.</div>';
   }
+}
 
-  function loadMore() {
-    const videosToLoad = allVideos.slice(videosLoaded, videosLoaded + 3);
-    videosToLoad.forEach((item, index) => {
-      const videoId = item.id.videoId;
-      const title = item.snippet.title;
-      const thumbnail = item.snippet.thumbnails.medium.url;
+function loadMore() {
+  const videosToLoad = allVideos.slice(videosLoaded, videosLoaded + 3);
+  videosToLoad.forEach((item, index) => {
+    const videoId = item.id.videoId;
+    const title = item.snippet.title;
+    const thumbnail = item.snippet.thumbnails.medium.url;
 
-      const videoItem = document.createElement('div');
-      videoItem.className = 'video-item';
-      videoItem.onclick = () => openPopup(videoId);
+    const videoItem = document.createElement('div');
+    videoItem.className = 'video-item';
+    videoItem.onclick = () => openPopup(videoId);
+    videoItem.innerHTML = `
+      ${videosLoaded === 0 && index === 0 ? '<div class="latest-badge">LATEST</div>' : ''}
+      <img src="${thumbnail}" alt="Thumbnail">
+      <span>${title}</span>
+    `;
+    videosDiv.appendChild(videoItem);
+  });
+  videosLoaded += 3;
+  loadMoreBtn.style.display = videosLoaded >= allVideos.length ? 'none' : 'block';
+}
 
-      videoItem.innerHTML = `
-        ${videosLoaded === 0 && index === 0 ? '<div class="latest-badge">LATEST</div>' : ''}
-        <img src="${thumbnail}" alt="Thumbnail">
-        <span>${title}</span>
-      `;
+async function fetchSubs() {
+  try {
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${CHANNEL_ID}&part=statistics`);
+    const data = await res.json();
+    const count = data.items[0].statistics.subscriberCount;
+    subCount.innerText = `${parseInt(count).toLocaleString()} subscribers`;
+  } catch {
+    subCount.innerText = 'Subscribers hidden';
+  }
+}
 
-      videosDiv.appendChild(videoItem);
+function openPopup(videoId) {
+  popupFrame.src = `https://www.youtube.com/embed/${videoId}`;
+  popup.style.display = 'flex';
+  document.body.classList.add('shake');
+  setTimeout(() => document.body.classList.remove('shake'), 500);
+}
+
+popupClose.onclick = () => {
+  popup.style.display = 'none';
+  popupFrame.src = '';
+};
+
+// Floating particles background
+let particles = [];
+
+function resizeCanvas() {
+  particlesCanvas.width = window.innerWidth;
+  particlesCanvas.height = window.innerHeight;
+}
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function createParticles() {
+  for (let i = 0; i < 60; i++) {
+    particles.push({
+      x: Math.random() * particlesCanvas.width,
+      y: Math.random() * particlesCanvas.height,
+      size: Math.random() * 3,
+      speedX: (Math.random() - 0.5) * 0.5,
+      speedY: (Math.random() - 0.5) * 0.5
     });
+  }
+}
 
-    videosLoaded += 3;
-    if (videosLoaded >= allVideos.length) {
-      loadMoreBtn.style.display = 'none';
-    } else {
-      loadMoreBtn.style.display = 'block';
+function animateParticles() {
+  ctx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
+  particles.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fillStyle = '#ff4d4d';
+    ctx.fill();
+    p.x += p.speedX;
+    p.y += p.speedY;
+
+    if (p.x < 0 || p.x > particlesCanvas.width) p.speedX = -p.speedX;
+    if (p.y < 0 || p.y > particlesCanvas.height) p.speedY = -p.speedY;
+  });
+  requestAnimationFrame(animateParticles);
+}
+
+createParticles();
+animateParticles();
+
+// Soccer ball explosion on 10 clicks
+document.body.addEventListener('click', (e) => {
+  if (e.target.closest('.profile, .popup')) return;
+  clickCount++;
+  if (clickCount >= 10) {
+    clickCount = 0;
+    for (let i = 0; i < 20; i++) {
+      const ball = document.createElement('img');
+      ball.src = 'https://upload.wikimedia.org/wikipedia/commons/6/6e/Soccerball.svg';
+      ball.style.position = 'fixed';
+      ball.style.top = '-50px';
+      ball.style.left = Math.random() * window.innerWidth + 'px';
+      ball.style.width = '30px';
+      ball.style.zIndex = 9999;
+      soccerExplosion.appendChild(ball);
+      const speed = 2 + Math.random() * 3;
+      let y = -50;
+      const interval = setInterval(() => {
+        y += speed;
+        ball.style.top = y + 'px';
+        if (y > window.innerHeight) {
+          clearInterval(interval);
+          ball.remove();
+        }
+      }, 16);
     }
   }
+});
 
-  async function fetchSubs() {
-    try {
-      const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${CHANNEL_ID}&part=statistics`);
-      const data = await res.json();
-      const count = data.items[0].statistics.subscriberCount;
-      subCount.innerText = `${parseInt(count).toLocaleString()} subscribers`;
-    } catch {
-      subCount.innerText = 'Subscribers hidden';
+// Ballon d'Or easter egg
+window.addEventListener('scroll', () => {
+  if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+    setTimeout(() => {
+      ballonMessage.style.display = 'block';
+    }, 10000);
+  }
+});
+
+// Konami code easter egg
+const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+let konamiIndex = 0;
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === konamiCode[konamiIndex]) {
+    konamiIndex++;
+    if (konamiIndex === konamiCode.length) {
+      proBadge.style.display = 'inline-block';
+      konamiIndex = 0;
     }
+  } else {
+    konamiIndex = 0;
   }
+});
 
-  function openPopup(videoId) {
-    popupFrame.src = `https://www.youtube.com/embed/${videoId}`;
-    popup.style.display = 'flex';
+// Super Mode L key
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'l' || e.key === 'L') {
+    const superText = document.createElement('div');
+    superText.innerText = 'SUPER MODE ACTIVATED';
+    superText.className = 'easter-egg-text';
+    document.body.appendChild(superText);
+    document.body.style.background = 'linear-gradient(to bottom, #550000, #000)';
+    setTimeout(() => {
+      document.body.style.background = 'linear-gradient(to bottom, #330000, #000)';
+      superText.remove();
+    }, 3000);
   }
+});
 
-  popupClose.onclick = () => {
-    popup.style.display = 'none';
-    popupFrame.src = '';
-  };
+// MadMac name click easter egg
+madmacName.onclick = () => {
+  alert('You found a secret! ⚽ MadMac is the GOAT!');
+};
 
-  await fetchVideos();
-  await fetchSubs();
-
-  loadMoreBtn.onclick = loadMore;
-})();
+await fetchVideos();
+await fetchSubs();
+loadMoreBtn.onclick = loadMore;
 </script>
-
-</body>
-</html>
