@@ -1,101 +1,86 @@
-import fetch from 'node-fetch';
-import { XMLParser } from 'fast-xml-parser';
-
-export async function handler(event, context) {
-  // Set CORS headers for all responses
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Content-Type': 'application/json'
-  };
-
-  // Handle OPTIONS request for CORS preflight
-  if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 204,
-      headers,
-      body: ''
-    };
-  }
+async function fetchVideos() {
+  const videosDiv = document.getElementById('videos');
+  const loader = document.getElementById('loader');
 
   try {
-    // Validate YouTube channel ID
-    const channelId = 'UC0ud4nQPzZo4PMBVdKTSP5Q';
-    if (!channelId || !channelId.startsWith('UC')) {
-      throw new Error('Invalid YouTube channel ID');
+    let videos = [];
+
+    if (location.protocol === 'file:') {
+      // opened from file explorer, fetch youtube page directly
+      console.log('opened locally, scraping youtube from browser...');
+
+      const res = await fetch('https://corsproxy.io/?https://www.youtube.com/@M8DM8C/videos');
+      const text = await res.text();
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(text, 'text/html');
+
+      const scripts = [...doc.querySelectorAll('script')];
+      const ytDataScript = scripts.find(s => s.textContent.includes('var ytInitialData'));
+
+      if (!ytDataScript) throw new Error('could not find ytInitialData in local mode');
+
+      const ytDataText = ytDataScript.textContent
+        .replace('var ytInitialData = ', '')
+        .replace(/;$/, '');
+
+      const jsonData = JSON.parse(ytDataText);
+
+      const videoItems = jsonData.contents
+        ?.twoColumnBrowseResultsRenderer
+        ?.tabs?.[0]
+        ?.tabRenderer
+        ?.content
+        ?.richGridRenderer
+        ?.contents || [];
+
+      videos = videoItems
+        .filter(item => item.richItemRenderer && item.richItemRenderer.content.videoRenderer)
+        .slice(0, 3)
+        .map(item => {
+          const video = item.richItemRenderer.content.videoRenderer;
+          return {
+            title: video.title.runs[0].text,
+            videoId: video.videoId,
+            thumbnail: video.thumbnail.thumbnails.pop().url,
+            link: `https://www.youtube.com/watch?v=${video.videoId}`
+          };
+        });
+
+    } else {
+      // online mode (netlify), fetch from serverless
+      console.log('running online, fetching videos from serverless...');
+
+      const response = await fetch('/.netlify/functions/fetchMadMacVideos');
+      videos = await response.json();
     }
 
-    // Fetch YouTube RSS feed with timeout
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-    
-    const res = await fetch(
-      `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`,
-      { signal: controller.signal }
-    );
-    clearTimeout(timeout);
+    // clean the ui and put the videos
+    videosDiv.innerHTML = '';
+    loader.style.display = 'none';
+    videosDiv.style.display = 'flex';
 
-    if (!res.ok) {
-      throw new Error(`YouTube API responded with status ${res.status}`);
-    }
+    videos.forEach(video => {
+      const videoItem = document.createElement('div');
+      videoItem.className = 'video-item';
+      videoItem.onclick = () => window.open(video.link, '_blank');
 
-    const xmlText = await res.text();
-    if (!xmlText.includes('<feed')) {
-      throw new Error('Invalid YouTube RSS response');
-    }
+      videoItem.innerHTML = `
+        <div class="video-arrow">&#10148;</div>
+        <div class="video-info">
+          <img src="${video.thumbnail}" alt="Thumbnail">
+          <span>${video.title}</span>
+        </div>
+      `;
 
-    // Parse XML with error handling
-    const parser = new XMLParser({
-      ignoreAttributes: false,
-      isArray: (name) => name === 'entry'
+      videosDiv.appendChild(videoItem);
     });
 
-    let jsonData;
-    try {
-      jsonData = parser.parse(xmlText);
-    } catch (parseError) {
-      throw new Error('Failed to parse YouTube RSS feed');
-    }
-
-    // Process entries with validation
-    const entries = jsonData?.feed?.entry || [];
-    if (!Array.isArray(entries)) {
-      throw new Error('Invalid video entries format');
-    }
-
-    const videos = entries.slice(0, 6).map(entry => {
-      if (!entry?.['yt:videoId']) {
-        throw new Error('Missing video ID in entry');
-      }
-      
-      return {
-        title: entry.title || 'Untitled Video',
-        videoId: entry['yt:videoId'],
-        thumbnail: `https://i.ytimg.com/vi/${entry['yt:videoId']}/hqdefault.jpg`,
-        link: `https://youtube.com/watch?v=${entry['yt:videoId']}`,
-        published: entry.published ? new Date(entry.published).toISOString() : null
-      };
-    });
-
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        recent: videos,
-        popular: [...videos].sort(() => 0.5 - Math.random()).slice(0, 6) // Random 6 as popular
-      })
-    };
-
-  } catch (err) {
-    console.error('Scraper error:', err);
-    return {
-      statusCode: err.message.includes('timeout') ? 504 : 500,
-      headers,
-      body: JSON.stringify({ 
-        error: 'Failed to fetch videos',
-        details: err.message,
-        timestamp: new Date().toISOString()
-      })
-    };
+  } catch (error) {
+    console.error('fucked up fetching videos:', error);
+    videosDiv.innerHTML = '<div>Failed to load videos.</div>';
   }
 }
+
+fetchVideos();
+setInterval(fetchVideos, 10 * 60 * 1000); // refresh every 10 minutes
