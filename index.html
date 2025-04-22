@@ -248,16 +248,25 @@
 </head>
 <body>
 
+<!-- Background music -->
+<audio id="bgMusic" autoplay loop hidden>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Stadium Light Effect -->
 <div class="stadium-light"></div>
 
+<!-- Particles Background -->
 <canvas id="particles" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></canvas>
 
+<!-- Profile Card -->
 <div class="profile">
   <img src="madmac pfp.jpeg" alt="MadMac Logo" id="profilePic">
   <h1 id="madmacName">MadMac</h1>
   <div id="proBadge" class="pro-badge">PRO VR PLAYER</div>
   <div class="sub-count" id="subCount">Loading subs...</div>
 
+  <!-- Buttons -->
   <div class="buttons">
     <a href="https://www.youtube.com/@M8DM8C" target="_blank">
       <button class="yt-button">YouTube</button>
@@ -270,6 +279,7 @@
     </a>
   </div>
 
+  <!-- Videos Section -->
   <div class="videos-section">
     <div class="videos-title">Latest Videos</div>
     <div id="loader" style="width:40px;height:40px;border:5px solid #fff;border-top:5px solid red;border-radius:50%;animation:spin 1s linear infinite;margin:20px auto;"></div>
@@ -278,13 +288,16 @@
   </div>
 </div>
 
+<!-- Popup Video Player -->
 <div class="popup" id="popup">
   <div class="popup-close" id="popupClose">&times;</div>
   <iframe id="popupFrame" src=""></iframe>
 </div>
 
+<!-- Soccer Ball Explosion -->
 <div id="soccerExplosion" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2;"></div>
 
+<!-- Ballon d'Or Easter Egg -->
 <div id="ballonMessage" style="display:none;position:fixed;bottom:0;width:100%;background:#ff0000;color:white;text-align:center;padding:10px;font-weight:bold;font-size:18px;z-index:9999;">
   MadMac for Ballon d'Or 2025 🏆
 </div>
