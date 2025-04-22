@@ -64,6 +64,9 @@
       margin-bottom: 20px;
       justify-content: center;
     }
+    .buttons a {
+      text-decoration: none;
+    }
     .buttons a button {
       border: none;
       padding: 10px 18px;
@@ -91,6 +94,23 @@
     .discord-button:hover {
       background: #4752c4;
       box-shadow: 0 0 20px #5865F2;
+    }
+    .tiktok-button {
+      background: #000;
+      color: white;
+      position: relative;
+      animation: tiktokglow 2s infinite alternate;
+    }
+    .tiktok-button:hover {
+      background: #111;
+    }
+    @keyframes tiktokglow {
+      0% {
+        box-shadow: 0 0 10px #ff0050, 0 0 20px #ff0050, 0 0 30px #ff0050;
+      }
+      100% {
+        box-shadow: 0 0 20px #ff0050, 0 0 40px #ff2d95, 0 0 60px #ff2d95;
+      }
     }
     @keyframes shake {
       0% { transform: translateX(0); }
@@ -242,6 +262,9 @@
     <a href="https://www.youtube.com/@M8DM8C" target="_blank">
       <button class="yt-button">YouTube</button>
     </a>
+    <a href="https://www.tiktok.com/@M8DM8C" target="_blank">
+      <button class="tiktok-button">TikTok</button>
+    </a>
     <a href="https://discord.gg/qBemfdPcZ2" target="_blank">
       <button class="discord-button">Discord</button>
     </a>
@@ -293,6 +316,7 @@ let allVideos = [];
 let clickCount = 0;
 let konamiProgress = 0;
 
+// fetch videos
 async function fetchVideos() {
   try {
     const res = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=${MAX_RESULTS}`);
@@ -328,6 +352,7 @@ function loadMore() {
   loadMoreBtn.style.display = videosLoaded >= allVideos.length ? 'none' : 'block';
 }
 
+// fetch subscriber count
 async function fetchSubs() {
   try {
     const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${CHANNEL_ID}&part=statistics`);
@@ -339,6 +364,7 @@ async function fetchSubs() {
   }
 }
 
+// open video popup
 function openPopup(videoId) {
   popupFrame.src = `https://www.youtube.com/embed/${videoId}`;
   popup.style.display = 'flex';
@@ -350,6 +376,7 @@ popupClose.onclick = () => {
   popupFrame.src = '';
 };
 
+// particles
 let particles = [];
 function resizeCanvas() {
   particlesCanvas.width = window.innerWidth;
@@ -386,6 +413,7 @@ function animateParticles() {
 createParticles();
 animateParticles();
 
+// soccer ball explosion
 document.body.addEventListener('click', (e) => {
   if (e.target.closest('.profile, .popup')) return;
   clickCount++;
@@ -393,7 +421,7 @@ document.body.addEventListener('click', (e) => {
     clickCount = 0;
     for (let i = 0; i < 20; i++) {
       const ball = document.createElement('img');
-      ball.src = 'https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccer_ball.svg';
+      ball.src = 'soccerball.png'; // LOCAL FILE next to index.html
       ball.style.position = 'fixed';
       ball.style.top = '-50px';
       ball.style.left = Math.random() * window.innerWidth + 'px';
@@ -414,6 +442,7 @@ document.body.addEventListener('click', (e) => {
   }
 });
 
+// ballon d'or easter egg
 window.addEventListener('scroll', () => {
   if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
     setTimeout(() => {
@@ -423,6 +452,7 @@ window.addEventListener('scroll', () => {
   }
 });
 
+// konami code easter egg
 const konamiCode = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
 let currentKonami = 0;
 window.addEventListener('keydown', (e) => {
@@ -437,6 +467,7 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
+// super mode with L
 window.addEventListener('keydown', (e) => {
   if (e.key === 'l' || e.key === 'L') {
     const superText = document.createElement('div');
@@ -452,10 +483,12 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
+// madmac click easter egg
 madmacName.onclick = () => {
   alert('You found a secret! ⚽ MadMac is the GOAT!');
 };
 
+// load everything
 await fetchVideos();
 await fetchSubs();
 loadMoreBtn.onclick = loadMore;
